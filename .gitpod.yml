@@ -1,0 +1,5 @@
+tasks:
+    - name: Frontend (React)
+      command: cd frontend && npm install && npm run dev
+    - name: Backend (Python)
+      command: cd backend && pip install -r requirements.txt && python app.py
