@@ -1,0 +1,7 @@
+{
+    "jwt": {
+        "jwt_secret_key": "YOURKEYHERE",
+        "jwt_algorithm": "HS256",
+        "jwt_expiration_days": 7
+    }
+}
