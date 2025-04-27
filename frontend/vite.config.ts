@@ -7,10 +7,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '^/(?!src|@vite|node_modules|assets).*': {
+      '/api': {
         target: 'http://backend:8000',
         changeOrigin: true,
-        rewrite: path => path,
+        rewrite: path => path.replace(/^\/api/, ''),
       },
     },
   },

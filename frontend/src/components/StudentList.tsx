@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, Edit2, Trash2 } from 'lucide-react';
+import { Search, Edit2, Trash2, FileText } from 'lucide-react';
 import type { Student } from '../types';
 
 interface StudentListProps {
   students: Student[];
   onEdit?: (student: Student) => void;
   onDelete?: (id: string) => void;
+  onViewDetails?: (studentId: string) => void;
 }
 
-export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete }) => {
+export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, onViewDetails }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredStudents = students.filter(student => 
@@ -18,13 +19,6 @@ export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDe
 
   return (
     <div className="bg-white/50 dark:bg-neutral-800/50 backdrop-blur-sm rounded-xl shadow-sm p-6">
-      <div className="flex justify-between items-center mb-6">
-        <button className="flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors shadow-sm hover:shadow">
-          <UserPlus className="h-5 w-5 mr-2" />
-          Add Student
-        </button>
-      </div>
-
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-5 w-5" />
         <input
@@ -43,8 +37,8 @@ export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDe
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">ID</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Sex</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Age</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Year</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Entrance year</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Entrance Age</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Class</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Actions</th>
             </tr>
@@ -55,9 +49,9 @@ export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDe
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.sex}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.entranceAge}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.entranceYear}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.class}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.entranceAge}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.studentClass}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   <div className="flex space-x-2">
                     <button
@@ -72,6 +66,14 @@ export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDe
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
+                    {onViewDetails && (
+                      <button
+                        onClick={() => onViewDetails(student.id)}
+                        className="text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
+                      >
+                        <FileText className="h-5 w-5" />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

@@ -2,6 +2,10 @@ version: '3.9'
 
 services:
   db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: db
     image: postgres:15
     environment:
       POSTGRES_USER: user
@@ -11,6 +15,8 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - appnet
 
   backend:
     container_name: backend
@@ -35,6 +41,7 @@ services:
       - appnet
       
   frontend:
+    container_name: frontend
     build: ./frontend
     volumes:
       - ./frontend:/app

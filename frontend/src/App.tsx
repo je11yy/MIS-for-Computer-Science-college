@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { Sun, Moon, GraduationCap, BookOpen, Users, UserCog } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,7 +8,6 @@ import { StudentsPage } from './pages/Students';
 import { CoursesPage } from './pages/Courses';
 import { LoginPage } from './pages/Login';
 import { RegisterPage } from './pages/Register';
-import { getHi } from './utils/Fetches';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -107,21 +106,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const [hiMessage, setHiMessage] = useState<string>('');
-
-  useEffect(() => {
-    const fetchHiMessage = async () => {
-      try {
-        const response = await getHi();
-        setHiMessage(response); // Устанавливаем результат в состояние
-      } catch (error) {
-        console.error(error);
-        setHiMessage('Failed to load message'); // В случае ошибки выводим сообщение об ошибке
-      }
-    };
-    fetchHiMessage();
-  }, []);
-
   return (
     <AuthProvider>
       <ThemeProvider>
@@ -150,7 +134,7 @@ function App() {
                             animate={{ opacity: 1, y: 0 }}
                             className="text-5xl font-bold text-neutral-900 dark:text-white"
                           >
-                            {hiMessage}
+                            Welcome to EduManager
                           </motion.h1>
                           <motion.p 
                             initial={{ opacity: 0, y: 20 }}
