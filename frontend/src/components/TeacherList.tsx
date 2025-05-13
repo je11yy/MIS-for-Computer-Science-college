@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Edit2, Trash2, BookOpen } from 'lucide-react';
+import { Search, Edit2, Trash2, BookPlus } from 'lucide-react';
 import type { Teacher } from '../types';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,7 +15,7 @@ export const TeacherList: React.FC<TeacherListProps> = ({
   teachers,
   onEdit,
   onDelete,
-  onViewCourses
+  onManageCourses
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const { user } = useAuth();
@@ -68,13 +68,15 @@ export const TeacherList: React.FC<TeacherListProps> = ({
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>)}
-                    <button
-                      onClick={() => onViewCourses?.(teacher.id)}
-                      className="text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
-                      title="View courses"
-                    >
-                      <BookOpen className="h-5 w-5" />
-                    </button>
+                    {user?.role == "admin" && onManageCourses && (
+                        <button
+                          onClick={() => onManageCourses(teacher)}
+                          className="text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
+                          title="Manage courses"
+                        >
+                          <BookPlus className="h-5 w-5" />
+                        </button>
+                      )}
                   </div>
                 </td>
               </tr>

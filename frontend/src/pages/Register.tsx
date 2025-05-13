@@ -11,9 +11,10 @@ export const RegisterPage = () => {
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       await register(username, password, studentId, teacherId);

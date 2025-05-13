@@ -1,5 +1,5 @@
 from asyncpg import Connection
-from .base import call_proc
+from .base import call_proc, fetch_one
 from models.schemas import User
 
 async def add_user(conn: Connection, user: User):
@@ -15,3 +15,6 @@ async def add_user(conn: Connection, user: User):
 
 async def get_user(conn: Connection, username: str):
     return await conn.fetchrow("SELECT * FROM get_user($1);", username)
+
+async def get_admin_users(conn: Connection):
+    return await fetch_one(conn, "SELECT * FROM get_admin_users()")

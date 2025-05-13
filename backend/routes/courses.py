@@ -47,10 +47,11 @@ async def delete(course_id: str):
 async def update(course_id: str, course: Course):
     try:
         async with db.pool.acquire() as conn:
-            existing_course = await get_course(conn, course_id)
-            if not existing_course:
-                raise HTTPException(status_code=404, detail="Course not found")
-            await update_course(conn, course_id, course)
+            async with conn.transaction():
+                existing_course = await get_course(conn, course_id)
+                if not existing_course:
+                    raise HTTPException(status_code=404, detail="Course not found")
+                await update_course(conn, course_id, course)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

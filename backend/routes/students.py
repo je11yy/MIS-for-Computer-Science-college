@@ -20,11 +20,12 @@ async def get_all():
 async def get(student_id: str):
     try:
         async with db.pool.acquire() as conn:
-            student = await get_student(conn, student_id)
-            courses = await get_student_courses(conn, student_id)
-            if not student:
-                raise HTTPException(status_code=404, detail="Student not found")
-            return prepare_student(student, courses)
+            async with conn.transaction():
+                student = await get_student(conn, student_id)
+                courses = await get_student_courses(conn, student_id)
+                if not student:
+                    raise HTTPException(status_code=404, detail="Student not found")
+                return prepare_student(student, courses)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -48,10 +49,11 @@ async def delete(student_id: str):
 async def update(student_id: str, student: Student):
     try:
         async with db.pool.acquire() as conn:
-            existing_student = await get_student(conn, student_id)
-            if not existing_student:
-                raise HTTPException(status_code=404, detail="Student not found")
-            await update_student(conn, student_id, student)
+            async with conn.transaction():
+                existing_student = await get_student(conn, student_id)
+                if not existing_student:
+                    raise HTTPException(status_code=404, detail="Student not found")
+                await update_student(conn, student_id, student)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -68,11 +70,12 @@ async def get_course_choice(student_id: str):
 async def update_course_choice(student_id: str, courses_ids: list[str]):
     try:
         async with db.pool.acquire() as conn:
-            student_courses = await get_student_courses(conn, student_id)
-            for course in student_courses:
-                if course['id'] not in courses_ids:
-                    await delete_student_courses(conn, student_id, [course['id']])
-            await update_student_courses(conn, student_id, courses_ids)
+            async with conn.transaction():
+                student_courses = await get_student_courses(conn, student_id)
+                for course in student_courses:
+                    if course['id'] not in courses_ids:
+                        await delete_student_courses(conn, student_id, [course['id']])
+                await update_student_courses(conn, student_id, courses_ids)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

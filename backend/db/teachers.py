@@ -11,9 +11,10 @@ async def get_teacher(conn: Connection, teacher_id: str):
 
 
 async def add_course_teacher(conn: Connection, course_id: str, teacher_id: str):
-    print(course_id, teacher_id)
     await call_proc(conn, "insert_course_teacher($1, $2)", course_id, teacher_id)
 
+async def delete_course_teacher(conn: Connection, course_id: str, teacher_id: str):
+    await call_proc(conn, "delete_course_teacher($1, $2)", course_id, teacher_id)
 
 async def add_teacher(conn: Connection, teacher: Teacher):
     return await fetch_one(conn, "SELECT * FROM insert_teacher($1);", teacher.name)

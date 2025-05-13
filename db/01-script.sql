@@ -112,7 +112,8 @@ BEGIN
     JOIN 
         courses c ON cc.course_id = c.course_id
     WHERE 
-        s.student_id = p_student_id;
+        s.student_id = p_student_id
+    ORDER BY c.course_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -318,7 +319,8 @@ BEGIN
     JOIN
         students s ON cc.student_id = s.student_id
     WHERE
-        cc.course_id = p_course_id;
+        cc.course_id = p_course_id
+    ORDER BY s.student_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -345,7 +347,8 @@ BEGIN
     JOIN 
         course_teacher ct ON c.course_id = ct.course_id
     WHERE 
-        ct.teacher_id = p_teacher_id;
+        ct.teacher_id = p_teacher_id
+    ORDER BY c.course_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -405,6 +408,19 @@ AS $$
 BEGIN
     INSERT INTO course_teacher (course_id, teacher_id)
     VALUES (p_course_id, p_teacher_id);
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE delete_course_teacher(
+    p_course_id CHAR(7),
+    p_teacher_id CHAR(5)
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    DELETE FROM course_teacher
+    WHERE course_id = p_course_id
+      AND teacher_id = p_teacher_id;
 END;
 $$;
 
@@ -517,6 +533,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_admin_users()
+RETURNS TABLE (
+    user_id INT,
+    username VARCHAR,
+    role VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        u.user_id,
+        u.username,
+        u.role
+    FROM 
+        users u
+    WHERE 
+        u.role = 'admin';
+END;
+$$ LANGUAGE plpgsql;
+
 -- OTHER PROCEDURES
 
 CREATE OR REPLACE PROCEDURE insert_user(
@@ -543,22 +578,22 @@ SELECT * FROM insert_teacher('Dr. Markus Schmidt');
 SELECT * FROM insert_teacher('Dr. Chen Wei');
 SELECT * FROM insert_teacher('Prof. Laura García');
 
-CALL insert_course('Mathematics', 3, 0.0, NULL);
-CALL insert_course('Physics', 4, 0.0, 2022);
-CALL insert_course('Literature', 3, 0.0, NULL);
-CALL insert_course('Biology', 3, 0.0, 2023);
-CALL insert_course('Computer Science', 5, 0.0, NULL);
-CALL insert_course('History', 3, 0.0, NULL);
-CALL insert_course('Chemistry', 4, 0.0, 2021);
-CALL insert_course('Philosophy', 2, 0.0, NULL);
-CALL insert_course('Economics', 3, 0.0, NULL);
-CALL insert_course('Art History', 2, 0.0, NULL);
-CALL insert_course('Environmental Science', 4, 0.0, NULL);
-CALL insert_course('Sociology', 3, 0.0, NULL);
-CALL insert_course('Political Science', 3, 0.0, NULL);
-CALL insert_course('Music Theory', 2, 0.0, NULL);
-CALL insert_course('Statistics', 4, 0.0, NULL);
-CALL insert_course('Psychology', 3, 0.0, NULL);
+CALL insert_course('Mathematics', 3, 75.0, NULL);
+CALL insert_course('Physics', 4, 80.0, 2022);
+CALL insert_course('Literature', 3, 60.0, NULL);
+CALL insert_course('Biology', 3, 70.0, 2023);
+CALL insert_course('Computer Science', 5, 85.0, NULL);
+CALL insert_course('History', 3, 50.0, NULL);
+CALL insert_course('Chemistry', 4, 78.5, 2021);
+CALL insert_course('Philosophy', 2, 55.0, NULL);
+CALL insert_course('Economics', 3, 68.0, NULL);
+CALL insert_course('Art History', 2, 45.0, NULL);
+CALL insert_course('Environmental Science', 4, 72.0, NULL);
+CALL insert_course('Sociology', 3, 60.5, NULL);
+CALL insert_course('Political Science', 3, 66.0, NULL);
+CALL insert_course('Music Theory', 2, 40.0, NULL);
+CALL insert_course('Statistics', 4, 82.0, NULL);
+CALL insert_course('Psychology', 3, 74.0, NULL);
 
 CALL insert_student('Oliver García', 'male', 20, 2020, 'A');
 CALL insert_student('Sophie Dupont', 'female', 21, 2020, 'B');
@@ -582,22 +617,22 @@ CALL insert_student('Lucas Wang', 'male', 20, 2022, 'A');
 CALL insert_student('Isabelle Martin', 'female', 23, 2019, 'B');
 CALL insert_student('Daniel Kim', 'male', 21, 2021, 'C');
 
-CALL insert_course_teacher('C000009', 'T00005'); -- Economics - Prof. Elena Petrova
-CALL insert_course_teacher('C000010', 'T00006'); -- Art History - Dr. Markus Schmidt
-CALL insert_course_teacher('C000011', 'T00007'); -- Environmental Science - Dr. Chen Wei
-CALL insert_course_teacher('C000012', 'T00008'); -- Sociology - Prof. Laura García
-CALL insert_course_teacher('C000013', 'T00005'); -- Political Science - Prof. Elena Petrova
-CALL insert_course_teacher('C000014', 'T00006'); -- Music Theory - Dr. Markus Schmidt
-CALL insert_course_teacher('C000015', 'T00007'); -- Statistics - Dr. Chen Wei
-CALL insert_course_teacher('C000016', 'T00008'); -- Psychology - Prof. Laura García
-CALL insert_course_teacher('C000001', 'T00005'); -- Prof. Elena Petrova
-CALL insert_course_teacher('C000001', 'T00007'); -- Dr. Chen Wei
-CALL insert_course_teacher('C000002', 'T00006'); -- Dr. Markus Schmidt
-CALL insert_course_teacher('C000003', 'T00007'); -- Dr. Chen Wei
-CALL insert_course_teacher('C000003', 'T00008'); -- Prof. Laura García
-CALL insert_course_teacher('C000004', 'T00005'); -- Prof. Elena Petrova
-CALL insert_course_teacher('C000005', 'T00006'); -- Dr. Markus Schmidt
-CALL insert_course_teacher('C000009', 'T00008'); -- Prof. Laura García
+CALL insert_course_teacher('C000009', 'T0005'); -- Economics - Prof. Elena Petrova
+CALL insert_course_teacher('C000010', 'T0006'); -- Art History - Dr. Markus Schmidt
+CALL insert_course_teacher('C000011', 'T0007'); -- Environmental Science - Dr. Chen Wei
+CALL insert_course_teacher('C000012', 'T0008'); -- Sociology - Prof. Laura García
+CALL insert_course_teacher('C000013', 'T0005'); -- Political Science - Prof. Elena Petrova
+CALL insert_course_teacher('C000014', 'T0006'); -- Music Theory - Dr. Markus Schmidt
+CALL insert_course_teacher('C000015', 'T0007'); -- Statistics - Dr. Chen Wei
+CALL insert_course_teacher('C000016', 'T0008'); -- Psychology - Prof. Laura García
+CALL insert_course_teacher('C000001', 'T0005'); -- Prof. Elena Petrova
+CALL insert_course_teacher('C000001', 'T0007'); -- Dr. Chen Wei
+CALL insert_course_teacher('C000002', 'T0006'); -- Dr. Markus Schmidt
+CALL insert_course_teacher('C000003', 'T0007'); -- Dr. Chen Wei
+CALL insert_course_teacher('C000003', 'T0008'); -- Prof. Laura García
+CALL insert_course_teacher('C000004', 'T0005'); -- Prof. Elena Petrova
+CALL insert_course_teacher('C000005', 'T0006'); -- Dr. Markus Schmidt
+CALL insert_course_teacher('C000009', 'T0008'); -- Prof. Laura García
 
 CALL insert_course_choosing('S000000001', 'C000001', 2020, 85.5);
 CALL insert_course_choosing('S000000002', 'C000002', 2020, 90.0);

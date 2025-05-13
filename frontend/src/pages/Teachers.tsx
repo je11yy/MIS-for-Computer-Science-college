@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TeacherList } from '../components/TeacherList';
 import { TeacherForm } from '../components/TeacherForm';
-import { TeacherCourses } from '../components/TeacherCourses';
+import { TeacherCourseManager } from '../components/TeacherCourseManager';
 import { getTeachers, addTeacher, updateTeacher, deleteTeacher } from '../utils/Fetches';
 import type { Teacher } from '../types';
 import { UserCog } from 'lucide-react';
@@ -12,9 +12,8 @@ export const TeachersPage = () => {
   const [error, setError] = useState<string>('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
-  const [isCoursesOpen, setIsCoursesOpen] = useState(false);
-  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCourseManagerOpen, setIsCourseManagerOpen] = useState(false);
   const { user } = useAuth();
 
   const fetchTeachers = async () => {
@@ -32,6 +31,11 @@ export const TeachersPage = () => {
     fetchTeachers();
   }, []);
 
+  const handleManageCourses = (teacher: Teacher) => {
+      setSelectedTeacher(teacher);
+      setIsCourseManagerOpen(true);
+    };
+
   const handleEdit = (teacher: Teacher) => {
     setSelectedTeacher(teacher);
     setIsFormOpen(true);
@@ -41,6 +45,16 @@ export const TeachersPage = () => {
     setSelectedTeacher(null);
     setIsFormOpen(true);
   };
+
+  const handleCourseManagerSubmit = async (data: Teacher) => {
+      try {
+        await updateTeacher(data);
+        await fetchTeachers();
+        setIsCourseManagerOpen(false);
+      } catch (err) {
+        setError('Failed to update teacher courses');
+      }
+    };
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this teacher?')) {
@@ -65,11 +79,6 @@ export const TeachersPage = () => {
     } catch (err) {
       setError('Failed to save teacher');
     }
-  };
-
-  const handleViewCourses = (teacherId: string) => {
-    setSelectedTeacherId(teacherId);
-    setIsCoursesOpen(true);
   };
 
   if (isLoading) {
@@ -107,7 +116,7 @@ export const TeachersPage = () => {
         teachers={teachers}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onViewCourses={handleViewCourses}
+        onManageCourses={handleManageCourses}
       />
 
       {isFormOpen && (
@@ -118,10 +127,11 @@ export const TeachersPage = () => {
         />
       )}
 
-      {isCoursesOpen && selectedTeacherId && (
-        <TeacherCourses
-          id={selectedTeacherId}
-          onClose={() => setIsCoursesOpen(false)}
+      {isCourseManagerOpen && selectedTeacher && (
+        <TeacherCourseManager
+          teacher={selectedTeacher}
+          onSubmit={handleCourseManagerSubmit}
+          onClose={() => setIsCourseManagerOpen(false)}
         />
       )}
     </div>
