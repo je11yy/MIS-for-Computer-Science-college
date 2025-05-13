@@ -1,75 +1,75 @@
 import { useEffect, useState } from 'react';
-import { CourseList } from '../components/CourseList';
-import { CourseForm } from '../components/CourseForm';
-import { CourseStatistics } from '../components/CourseStatistics';
-import { getCourses, addCourse, updateCourse, deleteCourse } from '../utils/Fetches';
-import type { Course } from '../types';
-import { BookPlus } from 'lucide-react';
+import { TeacherList } from '../components/TeacherList';
+import { TeacherForm } from '../components/TeacherForm';
+import { TeacherCourses } from '../components/TeacherCourses';
+import { getTeachers, addTeacher, updateTeacher, deleteTeacher } from '../utils/Fetches';
+import type { Teacher } from '../types';
+import { UserCog } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export const CoursesPage = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
+export const TeachersPage = () => {
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [error, setError] = useState<string>('');
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [isStatsOpen, setIsStatsOpen] = useState(false);
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [isCoursesOpen, setIsCoursesOpen] = useState(false);
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
-  const fetchCourses = async () => {
+  const fetchTeachers = async () => {
     try {
-      const data = await getCourses();
-      setCourses(data);
+      const data = await getTeachers();
+      setTeachers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch courses');
+      setError(err instanceof Error ? err.message : 'Failed to fetch teachers');
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCourses();
+    fetchTeachers();
   }, []);
 
-  const handleEdit = (course: Course) => {
-    setSelectedCourse(course);
+  const handleEdit = (teacher: Teacher) => {
+    setSelectedTeacher(teacher);
     setIsFormOpen(true);
   };
 
   const handleAdd = () => {
-    setSelectedCourse(null);
+    setSelectedTeacher(null);
     setIsFormOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this course?')) {
+    if (window.confirm('Are you sure you want to delete this teacher?')) {
       try {
-        await deleteCourse(id);
-        await fetchCourses();
+        await deleteTeacher(id);
+        await fetchTeachers();
       } catch (err) {
-        setError('Failed to delete course');
+        setError('Failed to delete teacher');
       }
     }
   };
 
-  const handleFormSubmit = async (data: Course) => {
+  const handleFormSubmit = async (data: Teacher) => {
     try {
-      if (selectedCourse) {
-        await updateCourse(data);
+      if (selectedTeacher) {
+        await updateTeacher(data);
       } else {
-        await addCourse(data);
+        await addTeacher(data);
       }
-      await fetchCourses();
+      await fetchTeachers();
       setIsFormOpen(false);
     } catch (err) {
-      setError('Failed to save course');
+      setError('Failed to save teacher');
     }
   };
 
-  const handleViewStats = (courseId: string) => {
-    setSelectedCourseId(courseId);
-    setIsStatsOpen(true);
+  const handleViewCourses = (teacherId: string) => {
+    setSelectedTeacherId(teacherId);
+    setIsCoursesOpen(true);
   };
 
   if (isLoading) {
@@ -98,30 +98,30 @@ export const CoursesPage = () => {
           onClick={handleAdd}
           className="inline-flex items-center px-4 py-2 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 transition-all duration-200"
         >
-          <BookPlus className="h-5 w-5 mr-2" />
-          Add Course
+          <UserCog className="h-5 w-5 mr-2" />
+          Add Teacher
         </button>
       </div>)}
 
-      <CourseList
-        courses={courses}
+      <TeacherList
+        teachers={teachers}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onViewStats={handleViewStats}
+        onViewCourses={handleViewCourses}
       />
 
       {isFormOpen && (
-        <CourseForm
-          course={selectedCourse || undefined}
+        <TeacherForm
+          teacher={selectedTeacher || undefined}
           onSubmit={handleFormSubmit}
           onCancel={() => setIsFormOpen(false)}
         />
       )}
 
-      {isStatsOpen && selectedCourseId && (
-        <CourseStatistics
-          id={selectedCourseId}
-          onClose={() => setIsStatsOpen(false)}
+      {isCoursesOpen && selectedTeacherId && (
+        <TeacherCourses
+          id={selectedTeacherId}
+          onClose={() => setIsCoursesOpen(false)}
         />
       )}
     </div>

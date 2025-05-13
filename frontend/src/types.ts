@@ -5,11 +5,13 @@ export interface Student {
   entranceAge: number;
   entranceYear: number;
   studentClass: string;
+  courses: ChosenCourse[];
 }
 
 export interface Course {
   id: string;
   name: string;
+  teacherId: string;
   credit: number;
   grade: number;
   canceledYear: number | null;
@@ -18,6 +20,16 @@ export interface Course {
 export interface Teacher {
   id: string;
   name: string;
+  courses: Course[];
+}
+
+export interface CoursesByTeacher {
+  courses: Course[];
+}
+
+export interface ChosenCourse extends Course {
+  chosenYear: number;
+  score: number | null;
 }
 
 export interface CourseChoice {
@@ -27,18 +39,21 @@ export interface CourseChoice {
   score: number | null;
 }
 
-export interface ChosenCourse {
-  id: string;
-  name: string;
-  credit: number;
-  chosenYear: number;
-  score: number | null;
-}
-
 export type UserRole = 'student' | 'teacher' | 'admin';
 
 export interface User {
-  id: string;
   role: UserRole;
   name: string;
+  student_id?: string;
+  teacher_id?: string;
+}
+
+export interface ClassInfo {
+  className: string;
+  students: Student[];
+  averageScore: number;
+}
+
+export interface StudentWithScore extends Student {
+  score: number | null;
 }

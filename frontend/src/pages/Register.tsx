@@ -2,26 +2,39 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import type { UserRole } from '../types';
 
 export const RegisterPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [role, setRole] = useState<UserRole>('student');
+  const [studentId, setStudentId] = useState('');
+  const [teacherId, setTeacherId] = useState('');
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(email, password, role, name);
+      await register(username, password, studentId, teacherId);
       navigate('/');
     } catch (err) {
       setError('Registration failed');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }; 
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <div className="w-8 h-8 border-2 border-solid rounded-full animate-spin 
+                border-neutral-500 border-t-transparent 
+                dark:border-neutral-200 dark:border-t-transparent">
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
@@ -30,17 +43,11 @@ export const RegisterPage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="relative h-48 mb-8 rounded-xl overflow-hidden">
-          <img
-            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1000"
-            alt="Education"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/20" />
-          <h1 className="absolute bottom-4 left-4 text-3xl font-bold text-white">Create Account</h1>
-        </div>
-        
-        <div className="bg-neutral-50 dark:bg-neutral-800 p-8 rounded-xl border border-neutral-200 dark:border-neutral-700">
+        <div className="bg-white dark:bg-neutral-800 p-8 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700">
+          <h1 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white text-center">
+            Create Account
+          </h1>
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <motion.div
@@ -54,30 +61,17 @@ export const RegisterPage = () => {
             
             <div>
               <label className="block text-sm font-medium text-neutral-900 dark:text-white">
-                Name
+                Username
               </label>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="mt-1 w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors"
                 required
               />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-neutral-900 dark:text-white">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors"
-                required
-              />
-            </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-900 dark:text-white">
                 Password
@@ -90,20 +84,29 @@ export const RegisterPage = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-neutral-900 dark:text-white">
-                Role
+                Student ID (optional)
               </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
+              <input
+                type="text"
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
                 className="mt-1 w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors"
-              >
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="admin">Administrator</option>
-              </select>
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-900 dark:text-white">
+                Teacher ID (optional)
+              </label>
+              <input
+                type="text"
+                value={teacherId}
+                onChange={(e) => setTeacherId(e.target.value)}
+                className="mt-1 w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors"
+              />
             </div>
             
             <motion.button

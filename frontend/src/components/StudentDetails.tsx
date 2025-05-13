@@ -1,7 +1,6 @@
-import { useTheme } from '../context/ThemeContext'; // Импортируем хук useTheme
+import { useTheme } from '../context/ThemeContext';
 import { useEffect, useState } from 'react';
 import { getStudentDetails } from '../utils/Fetches';
-import { ChosenCourse } from '../types';
 
 interface StudentDetailsProps {
   id: string;
@@ -11,11 +10,10 @@ interface StudentDetailsProps {
   entranceYear: number;
   studentClass: string;
   averageScore: number;
-  courses: ChosenCourse[];
 }
 
 export const StudentDetails = ({ id, onClose }: { id: string; onClose: () => void }) => {
-  const { theme } = useTheme(); // Получаем текущую тему
+  const { theme } = useTheme();
   const [studentInfo, setStudentInfo] = useState<StudentDetailsProps>();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -36,11 +34,22 @@ export const StudentDetails = ({ id, onClose }: { id: string; onClose: () => voi
   }, [id]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center">
+        <div className="w-8 h-8 border-2 border-solid rounded-full animate-spin 
+                border-neutral-500 border-t-transparent 
+                dark:border-neutral-200 dark:border-t-transparent">
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="p-4 mb-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900 dark:text-red-100">
+        <span className="font-medium">Error:</span> {error}
+      </div>
+    );
   }
 
   return (
@@ -76,34 +85,6 @@ export const StudentDetails = ({ id, onClose }: { id: string; onClose: () => voi
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">Average Score</p>
                 <p className="text-neutral-900 dark:text-white">{studentInfo?.averageScore?.toFixed(2) ?? 'N/A'}</p>
               </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-3 text-neutral-900 dark:text-white">Courses</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b dark:border-neutral-700">
-                    <th className="text-left py-2 text-neutral-900 dark:text-white">ID</th>
-                    <th className="text-left py-2 text-neutral-900 dark:text-white">Name</th>
-                    <th className="text-left py-2 text-neutral-900 dark:text-white">Credit</th>
-                    <th className="text-left py-2 text-neutral-900 dark:text-white">Chosen Year</th>
-                    <th className="text-left py-2 text-neutral-900 dark:text-white">Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {studentInfo?.courses?.map((course: ChosenCourse) => (
-                    <tr key={course.id} className="border-b dark:border-neutral-700">
-                      <td className="py-2 text-neutral-900 dark:text-white">{course.id}</td>
-                      <td className="py-2 text-neutral-900 dark:text-white">{course.name}</td>
-                      <td className="py-2 text-neutral-900 dark:text-white">{course.credit}</td>
-                      <td className="py-2 text-neutral-900 dark:text-white">{course.chosenYear}</td>
-                      <td className="py-2 text-neutral-900 dark:text-white">{course.score ?? 'Not graded'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
         </div>

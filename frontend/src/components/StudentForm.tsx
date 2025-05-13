@@ -31,10 +31,10 @@ export const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, onC
     defaultValues: student
     ? {
         ...student,
-        sex: student.sex === 'male' ? 'male' : 'female', // явная проверка
+        sex: student.sex === 'male' ? 'male' : 'female',
       }
     : {
-        id: '',
+        id: '0000000000',
         name: '',
         sex: 'male',
         entranceAge: 18,
@@ -51,20 +51,22 @@ export const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, onC
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Student ID
-            </label>
-            <input
-              type="text"
-              {...register('id')}
-              className="mt-1 block w-full rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-neutral-900 dark:text-white focus:border-neutral-500 focus:ring-neutral-500"
-              disabled={!!student}
-            />
-            {errors.id && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.id.message}</p>
-            )}
-          </div>
+          {student && (
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                Student ID
+              </label>
+              <input
+                type="text"
+                {...register('id')}
+                className="mt-1 block w-full rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-neutral-900 dark:text-white focus:border-neutral-500 focus:ring-neutral-500"
+                disabled
+              />
+              {errors.id && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.id.message}</p>
+              )}
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">

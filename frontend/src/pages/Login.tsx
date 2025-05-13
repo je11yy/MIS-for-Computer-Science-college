@@ -4,21 +4,35 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await login(username, password);
       navigate('/');
     } catch (err) {
       setError('Invalid credentials');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <div className="w-8 h-8 border-2 border-solid rounded-full animate-spin 
+                border-neutral-500 border-t-transparent 
+                dark:border-neutral-200 dark:border-t-transparent">
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
@@ -27,17 +41,11 @@ export const LoginPage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="relative h-48 mb-8 rounded-xl overflow-hidden">
-          <img
-            src="https://images.unsplash.com/photo-1501290836517-b22a21c522a4?auto=format&fit=crop&w=1000"
-            alt="Education"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/20" />
-          <h1 className="absolute bottom-4 left-4 text-3xl font-bold text-white">Welcome Back</h1>
-        </div>
-        
-        <div className="bg-neutral-50 dark:bg-neutral-800 p-8 rounded-xl border border-neutral-200 dark:border-neutral-700">
+        <div className="bg-white dark:bg-neutral-800 p-8 rounded-xl shadow-lg border border-neutral-200 dark:border-neutral-700">
+          <h1 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-white text-center">
+            Welcome Back
+          </h1>
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <motion.div
@@ -51,12 +59,12 @@ export const LoginPage = () => {
             
             <div>
               <label className="block text-sm font-medium text-neutral-900 dark:text-white">
-                Email
+                Username
               </label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="mt-1 w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:ring-2 focus:ring-neutral-500 focus:border-transparent transition-colors"
                 required
               />

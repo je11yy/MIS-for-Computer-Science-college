@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
-import { Search, Edit2, Trash2, FileText } from 'lucide-react';
+import { Search, Edit2, Trash2, FileText, BookPlus } from 'lucide-react';
 import type { Student } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface StudentListProps {
   students: Student[];
   onEdit?: (student: Student) => void;
   onDelete?: (id: string) => void;
   onViewDetails?: (studentId: string) => void;
+  onManageCourses?: (student: Student) => void;
 }
 
-export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, onViewDetails }) => {
+export const StudentList: React.FC<StudentListProps> = ({
+  students,
+  onEdit,
+  onDelete,
+  onViewDetails,
+  onManageCourses
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useAuth();
 
   const filteredStudents = students.filter(student => 
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -40,7 +49,9 @@ export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDe
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Entrance year</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Entrance Age</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Class</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Actions</th>
+              {(onEdit || onDelete || onViewDetails || onManageCourses) && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -52,30 +63,48 @@ export const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDe
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.entranceYear}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.entranceAge}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{student.studentClass}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => onEdit?.(student)}
-                      className="text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 transition-colors"
-                    >
-                      <Edit2 className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => onDelete?.(student.id)}
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                    {onViewDetails && (
-                      <button
-                        onClick={() => onViewDetails(student.id)}
-                        className="text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
-                      >
-                        <FileText className="h-5 w-5" />
-                      </button>
-                    )}
-                  </div>
-                </td>
+                {(onEdit || onDelete || onViewDetails || onManageCourses) && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
+                    <div className="flex space-x-2">
+                      {user?.role == "admin" && onEdit && (
+                        <button
+                          onClick={() => onEdit(student)}
+                          className="text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 transition-colors"
+                          title="Edit student"
+                        >
+                          <Edit2 className="h-5 w-5" />
+                        </button>
+                      )}
+                      {user?.role == "admin" && onDelete && (
+                        <button
+                          onClick={() => onDelete(student.id)}
+                          className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+                          title="Delete student"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      )}
+                      {onViewDetails && (
+                        <button
+                          onClick={() => onViewDetails(student.id)}
+                          className="text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
+                          title="View details"
+                        >
+                          <FileText className="h-5 w-5" />
+                        </button>
+                      )}
+                      {user?.role == "admin" && onManageCourses && (
+                        <button
+                          onClick={() => onManageCourses(student)}
+                          className="text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors"
+                          title="Manage courses"
+                        >
+                          <BookPlus className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

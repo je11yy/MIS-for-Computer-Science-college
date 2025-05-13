@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Edit2, Trash2, BarChart2 } from 'lucide-react';
 import type { Course } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface CourseListProps {
   courses: Course[];
@@ -11,6 +12,7 @@ interface CourseListProps {
 
 export const CourseList: React.FC<CourseListProps> = ({ courses, onEdit, onDelete, onViewStats }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useAuth();
 
   const filteredCourses = courses.filter(course => 
     course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,18 +54,22 @@ export const CourseList: React.FC<CourseListProps> = ({ courses, onEdit, onDelet
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{course.canceledYear}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">
                   <div className="flex space-x-2">
-                    <button
-                      onClick={() => onEdit?.(course)}
-                      className="text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 transition-colors"
-                    >
-                      <Edit2 className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => onDelete?.(course.id)}
-                      className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
+                    {user?.role == "admin" && (
+                      <button
+                        onClick={() => onEdit?.(course)}
+                        className="text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 transition-colors"
+                      >
+                        <Edit2 className="h-5 w-5" />
+                      </button>
+                    )}
+                    {user?.role == "admin" && (
+                        <button
+                        onClick={() => onDelete?.(course.id)}
+                        className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    )}
                     {onViewStats && (
                       <button
                         onClick={() => onViewStats(course.id, course.name)}

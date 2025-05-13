@@ -1,4 +1,4 @@
-from database import Database
+from db.database import Database
 import json
 import jwt
 from passlib.context import CryptContext
@@ -11,17 +11,21 @@ class AuthService:
         self.db = db
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def __verify_password(self, plain_password: str, hashed_password: str) -> bool:
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def __hash_password(self, password: str) -> str:
+    def hash_password(self, password: str) -> str:
         return self.pwd_context.hash(password)
-    
-    def __create_jwt(self, user_id: int, user_email: str) -> str:
+
+    def create_jwt(self, username: str, user_role: str, student_id: str = None, teacher_id: str = None) -> str:
         expiration = datetime.now(timezone.utc) + timedelta(days=self.config["jwt_expiration_days"])
-        token_data = {"user_email": user_email, "user_id": user_id, "exp": expiration}
+        token_data = {"username": username, "role": user_role, "exp": expiration}
+        if student_id:
+            token_data["student_id"] = student_id
+        if teacher_id:
+            token_data["teacher_id"] = teacher_id
         return jwt.encode(token_data, self.config["jwt_secret_key"], algorithm=self.config["jwt_algorithm"])
-    
-    def __decode_token(self, token: str) -> dict:
+
+    def decode_token(self, token: str) -> dict:
         payload = jwt.decode(token, self.config["jwt_secret_key"], algorithms=[self.config["jwt_algorithm"]])
         return payload
