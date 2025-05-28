@@ -1,8 +1,8 @@
 # MIS for Computer Science College
 
-**Completed by:** Vlasova Lada
-**Student ID:** 202569990048
-**GitHub with code:** https://github.com/je11yy/MIS-for-Computer-Science-college
+-   **Completed by:** Vlasova Lada
+-   **Student ID:** 202569990048
+-   **GitHub with code:** https://github.com/je11yy/MIS-for-Computer-Science-college
 
 ---
 
@@ -129,11 +129,11 @@ Stores all information related to users, courses, teachers, and students.
 
 # User Roles:
 
--   **Administrator** Can create, edit, and delete any information: courses, students, teachers, and manage course assignments.
+-   **Administrator** can create, edit, and delete any information: courses, students, teachers, and manage course assignments.
 
--   **Student** Can view courses and teacher information, enroll in courses, and view their grades.
+-   **Student** can view courses, teacher information and their grades.
 
--   **Teacher** Can view information about students and courses, and assign and edit student grades.
+-   **Teacher** can view information about students and courses, assign and edit student grades.
 
 ---
 
@@ -278,7 +278,6 @@ To change the theme, click this button.
 ![Class Information](screenshots/class-info.png)
 ![Assigning Courses to Teachers](screenshots/teacher-courses.png)
 ![Assigning Courses to Students](screenshots/student-courses.png)
-![Edit Course Page](screenshots/edit-course.png)
 ![Edit Teacher Page](screenshots/edit-teacher.png)
 ![Edit Student Page](screenshots/edit-student.png)
 ![Add Student Page](screenshots/add-student.png)
