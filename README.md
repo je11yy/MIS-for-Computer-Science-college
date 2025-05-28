@@ -2,7 +2,7 @@
 
 **Completed by:** Vlasova Lada
 **Student ID:** 202569990048
-**GitHub with code:** _[link to repository]_
+**GitHub with code:** https://github.com/je11yy/MIS-for-Computer-Science-college
 
 ---
 
