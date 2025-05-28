@@ -12,7 +12,7 @@ class Student(BaseModel):
 class StudentWithScore(BaseModel):
     id: str
     name: str
-    score: float
+    score: Optional[float]
     chosenYear: int
 
 class ChosenCourse(BaseModel):
@@ -59,7 +59,7 @@ class CourseChoosing(BaseModel):
     studentId: str
     courseId: str
     chosenYear: int
-    score: float
+    score: Optional[float]
 
 class CourseChoosingResponse(BaseModel):
     courseChoosing: list[CourseChoosing]

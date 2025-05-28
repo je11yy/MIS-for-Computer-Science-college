@@ -1,57 +1,66 @@
 services:
-  db:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    container_name: db
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dbname
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - appnet
+    db:
+        build:
+            context: ./db
+            dockerfile: Dockerfile
+        container_name: db
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: dbname
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U user -d dbname"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        restart: unless-stopped
+        networks:
+            - appnet
 
-  backend:
-    container_name: backend
-    build: ./backend
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - ./backend:/code
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: dbname
-      JWT_SECRET: "your-secret-key"
-      JWT_ALGORITHM: "HS256"
-      JWT_EXPIRE_DAYS: 7
-    networks:
-      - appnet
-      
-  frontend:
-    container_name: frontend
-    build: ./frontend
-    volumes:
-      - ./frontend:/app
-    ports:
-      - "5173:5173"
-    stdin_open: true
-    tty: true
-    networks:
-      - appnet
+    backend:
+        container_name: backend
+        build: ./backend
+        command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+        volumes:
+            - ./backend:/code
+        ports:
+            - "8000:8000"
+        depends_on:
+            db:
+                condition: service_healthy
+        environment:
+            DB_HOST: db
+            DB_PORT: 5432
+            DB_USER: user
+            DB_PASSWORD: password
+            DB_NAME: dbname
+            JWT_SECRET: "your-secret-key"
+            JWT_ALGORITHM: "HS256"
+            JWT_EXPIRE_DAYS: 7
+        networks:
+            - appnet
+
+    frontend:
+        container_name: frontend
+        build: ./frontend
+        volumes:
+            - ./frontend:/app
+        ports:
+            - "5173:5173"
+        stdin_open: true
+        tty: true
+        networks:
+            - appnet
+        restart: unless-stopped
+        depends_on:
+            - backend
 
 volumes:
-  pgdata:
+    pgdata:
 
 networks:
-  appnet:
+    appnet:

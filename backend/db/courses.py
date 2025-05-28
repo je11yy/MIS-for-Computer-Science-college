@@ -8,7 +8,6 @@ async def get_course_students(conn: Connection, course_id: str):
 async def get_courses(conn: Connection):
     return await fetch_all(conn, "SELECT * FROM get_courses();")
 
-
 async def get_course(conn: Connection, course_id: str):
     return await fetch_one(conn, "SELECT * FROM get_course($1);", course_id)
 

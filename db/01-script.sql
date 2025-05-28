@@ -1,40 +1,40 @@
 -- TABLES
 
 CREATE TABLE students (
-    student_id CHAR(10) PRIMARY KEY,
+    student_id CHAR(10) PRIMARY KEY UNIQUE,
     name VARCHAR(100) NOT NULL,
-    sex VARCHAR(6) CHECK (sex IN ('male', 'female')),
-    entrance_age INT CHECK (entrance_age BETWEEN 10 AND 50),
-    entrance_year INT,
-    class VARCHAR(20)
+    sex VARCHAR(6) CHECK (sex IN ('male', 'female')) NOT NULL,
+    entrance_age INT CHECK (entrance_age BETWEEN 10 AND 50) NOT NULL,
+    entrance_year INT NOT NULL,
+    class VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE teachers (
-    teacher_id CHAR(5) PRIMARY KEY,
+    teacher_id CHAR(5) PRIMARY KEY UNIQUE,
     name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE courses (
-    course_id CHAR(7) PRIMARY KEY,
+    course_id CHAR(7) PRIMARY KEY UNIQUE,
     name VARCHAR(100) NOT NULL,
-    credit INT CHECK (credit > 0),
-    grade NUMERIC(5,2),
+    credit INT CHECK (credit > 0) NOT NULL,
+    grade NUMERIC(5,2) NOT NULL CHECK (grade >= 0 AND grade <= 100),
     canceled_year INT
 );
 
 CREATE TABLE course_teacher (
-    course_id CHAR(7),
-    teacher_id CHAR(5),
+    course_id CHAR(7) NOT NULL,
+    teacher_id CHAR(5) NOT NULL,
     PRIMARY KEY (course_id, teacher_id),
     FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE,
     FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id) ON DELETE CASCADE
 );
 
 CREATE TABLE course_choosing (
-    student_id CHAR(10),
-    course_id CHAR(7),
-    chosen_year INT,
-    score NUMERIC(5,2),
+    student_id CHAR(10) NOT NULL,
+    course_id CHAR(7) NOT NULL,
+    chosen_year INT NOT NULL,
+    score NUMERIC(5,2) CHECK (score >= 0 AND score <= 100),
     PRIMARY KEY (student_id, course_id),
     FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE
